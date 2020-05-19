@@ -6,3 +6,4 @@ Openweathermap with the raspberry pi and a 3.5" LCD
  connected to the Pi. The screen required is a 3.5” HDMI. The touch feature of the screen is not required 
  but is helpful to shutdown the App. 
  
+the complete project is located at https://www.hackster.io/Granpino/raspberry-pi-open-weather-display-6f12a7 
