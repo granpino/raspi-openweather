@@ -14,7 +14,7 @@ cat <<EOF > weather.desktop
 Name=Openweather
 Type=Application
 Exec=lxterminal -t "WEATHER" --working-directory=/home/pi/raspi-openweather/ -e ./weather.sh
-Icon=/home/pi/raspi-openweather/logo.png
+Icon=/home/pi/raspi-openweather/OpenLogo.png
 Comment=test
 Terminal=true
 
