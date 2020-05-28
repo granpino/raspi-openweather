@@ -1,7 +1,7 @@
 ##
 #!/usr/bin/python
 # raspi openweather by Granpino. May 2020
-# Rev1
+# Rev1.1
 import sys, pygame
 from pygame.locals import *
 import time
@@ -12,7 +12,7 @@ import requests
 pygame.init()
 #==================== change these settings ===============
 settings = {
-    'api_key':'xxxxxxxxxxxx',
+    'api_key':'xxxxxxxxxxxxxxxxxxx',
     'lat':'xx.xxxx',
     'lon':'-xx.xxxx',
     'temp_unit':'imperial'} #unit can be metric, or imperial
@@ -21,21 +21,19 @@ Temp_Unit = settings["temp_unit"]
 BASE_URL = "http://api.openweathermap.org/data/2.5/onecall?appid={0}&exclude=minutely,hourly&lat={1}&lon={2}&units={3}"
 
 ###setup
-#degSymF = unichr(0x2109)         # Unicode for Degree F
 degSYM = unichr(0x00B0)          #unicode for degree symbol
-#degSymC = unichr(0x2103)
-pin = '4' 
+pin = '4'  #dht22
 sensor = Adafruit_DHT.DHT22
 
 #set size of the screen
-size = width, height = 480, 320  #To fit in a.. screen
+size = width, height = 480, 320  #To fit in a small screen
 
 #screen = pygame.display.set_mode(size) # use this for troubleshooting
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 #define colors
 cyan = 50, 255, 255
-blue = 130, 75, 200
+blue = 0, 0, 255
 black = 0, 0, 0
 white = 255, 255, 255
 lblue = 75, 140, 200
@@ -44,13 +42,20 @@ silver = 192, 192, 192
 yellow = 255, 255, 0
 
 #other
-temp = 0
 localH = 0
 localT = 0
-location = '??'
-sunrize = ' '
 tim2 = "00"
 tim3 = "00"
+
+def connect_screen(): # connection dropouts
+    screen.fill(blue)
+    font=pygame.font.Font(None,25)
+    label=font.render("Trying to reconnect....", 1, (white))
+    screen.blit(label,(10,15))
+    pygame.display.flip()
+    time.sleep(6)
+    update_weather()
+
 def __del__(self):
 	"Destructor to make sure pygame shuts down"
 #define function that checks for mouse clicks
@@ -70,7 +75,6 @@ def button(number):
 	time.sleep(2)
 	pygame.quit()
 	sys.exit()
-
 
 def update_weather():
     global temp1 
@@ -98,13 +102,16 @@ def update_weather():
     global load_icon4
     global logo
 
-
     final_url = BASE_URL.format(settings["api_key"],settings["lat"],settings["lon"],settings["temp_unit"])
-    weather_data = requests.get(final_url).json()
+    try:
+        weather_data = requests.get(final_url).json()
+    except:
+        print "===connection error==="
+        connect_screen()
     response = requests.get(final_url)
     x = response.json()
 
- #============ current wthr
+ #============ current weather
     y = x["current"]
     temp1 = y["temp"]
     temp1 = round(temp1, 1)
@@ -270,6 +277,7 @@ def refresh_screen():
 
     pygame.display.flip()
 
+#connect_screen()
 while True:
     # get the weather every 120 sec 
     update_weather() # update indoor and outdoor
