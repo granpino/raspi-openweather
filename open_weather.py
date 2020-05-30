@@ -1,7 +1,7 @@
 ##
 #!/usr/bin/python
 # raspi openweather by Granpino. May 2020
-# Rev1.1
+# Rev1.11
 import sys, pygame
 from pygame.locals import *
 import time
@@ -279,7 +279,7 @@ def refresh_screen():
 
 #connect_screen()
 while True:
-    # get the weather every 120 sec 
+    # get the weather every 5 minutes 
     update_weather() # update indoor and outdoor
     for y in range(5): # read DHT every 8 sec
         localH, localT = Adafruit_DHT.read_retry(sensor, pin)
@@ -289,7 +289,7 @@ while True:
 	    localT = (int(localT)) # metric
         localH = (int(localH))
 
-        for x in range(70): # 
+        for x in range(200): # 
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     click_pos = pygame.mouse.get_pos()
