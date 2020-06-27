@@ -1,7 +1,7 @@
 ##
 #!/usr/bin/python
 # raspi openweather by Granpino. May 2020
-# Rev1.11
+# Rev1
 import sys, pygame
 from pygame.locals import *
 import time
@@ -12,9 +12,9 @@ import requests
 pygame.init()
 #==================== change these settings ===============
 settings = {
-    'api_key':'xxxxxxxxxxxxxxxxxxx',
-    'lat':'xx.xxxx',
-    'lon':'-xx.xxxx',
+    'api_key':'91118451a271265xxxxxxxxxxxxx',
+    'lat':'30.5602',
+    'lon':'-50.4471',
     'temp_unit':'imperial'} #unit can be metric, or imperial
 #============================================================
 Temp_Unit = settings["temp_unit"]
@@ -44,8 +44,8 @@ yellow = 255, 255, 0
 #other
 localH = 0
 localT = 0
-tim2 = "00"
-tim3 = "00"
+
+clock = pygame.time.Clock()
 
 def connect_screen(): # connection dropouts
     screen.fill(blue)
@@ -101,13 +101,15 @@ def update_weather():
     global load_icon3
     global load_icon4
     global logo
+    global localT
+    global localH
 
     final_url = BASE_URL.format(settings["api_key"],settings["lat"],settings["lon"],settings["temp_unit"])
-    try:
-        weather_data = requests.get(final_url).json()
-    except:
-        print "===connection error==="
-        connect_screen()
+#    try:
+    weather_data = requests.get(final_url).json()
+  #  except:
+   #     print "===connection error==="
+    #connect_screen()
     response = requests.get(final_url)
     x = response.json()
 
@@ -183,6 +185,14 @@ def update_weather():
     load_icon4=pygame.image.load(ICON4)
     logo = pygame.image.load("OpenLogo.png")
 
+    localH, localT = Adafruit_DHT.read_retry(sensor, pin)
+    if Temp_Unit == ("imperial"):
+       localT = (int(localT)*1.8+32) # from Deg C to Deg F
+       localH = (int(localH))
+    else:
+        localT = (int(localT)) # metric
+        localH = (int(localH))
+
 #===================    
 
 # SETUP
@@ -199,8 +209,6 @@ else:
 
 
 def refresh_screen():
-    global tim2
-    global tim3
     tim1 = time.strftime( "%a, %b %d", time.localtime() )
     tim2 = time.strftime( "%I:%M", time.localtime() )
     tim3 = time.strftime( "%S", time.localtime() )
@@ -273,35 +281,28 @@ def refresh_screen():
     pygame.draw.line(screen, white,(320,190),(320,315))
     pygame.draw.line(screen, white,(300,50),(300,150))
 
-    time.sleep(.1)
-
     pygame.display.flip()
 
-#connect_screen()
-while True:
-    # get the weather every 5 minutes 
-    update_weather() # update indoor and outdoor
-    for y in range(5): # read DHT every 8 sec
-        localH, localT = Adafruit_DHT.read_retry(sensor, pin)
-        if Temp_Unit == ("imperial"):
-	    localT = (int(localT)*1.8+32) # from Deg C to Deg F
-	else:
-	    localT = (int(localT)) # metric
-        localH = (int(localH))
+def main():
+    timer = pygame.time.get_ticks()
+    while True:
+        seconds=(pygame.time.get_ticks() - timer)/1000
+        if seconds > 240: # check every 4 min 
+	    timer = pygame.time.get_ticks()
+            update_weather() # update indoor and outdoor
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                click_pos = pygame.mouse.get_pos()
+                print "screen clicked" 
+                print click_pos 
+                on_click()
 
-        for x in range(200): # 
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    click_pos = pygame.mouse.get_pos()
-                    print "screen clicked" 
-                    print click_pos 
-                    on_click()
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE: # ESC to exit
+                sys.exit()
+        clock.tick(15) #refresh screen 
+        refresh_screen()
 
-                if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE: # ESC to exit
-                        sys.exit()
-            pygame.time.wait(100)
-            refresh_screen()
+update_weather()
+main()
 
-pi.stop()
-pygame.quit()
