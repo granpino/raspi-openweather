@@ -285,6 +285,7 @@ def refresh_screen():
 
 def main():
     timer = pygame.time.get_ticks()
+    global click_pos
     while True:
         seconds=(pygame.time.get_ticks() - timer)/1000
         if seconds > 240: # check every 4 min 
