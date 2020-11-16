@@ -3,7 +3,7 @@
 # raspi openweather by Granpino. May 2020
 # For a 3.5" or 5" screen with resolution set at 640x320  
 # The /boot/config.txt file needs to be changed first.
-# Rev1.1
+# Rev1.2
 import sys, pygame
 from pygame.locals import *
 import time
@@ -303,7 +303,7 @@ def main():
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE: # ESC to exit
                 sys.exit()
-        clock.tick(20) #fps
+        clock.tick(3) #screen refresh fps
         refresh_screen()
 
 update_weather()
